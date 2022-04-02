@@ -1,5 +1,6 @@
 package grtgaz.rio.mobprogramming;
 
+
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -29,22 +30,39 @@ public class RomanNumberConverter {
     }
 
     public String convert(int classicNumberToConvert) {
-        var eligibleRomainDigits = RomanDigit.inReverseOrder()
+        var eligibleRomanDigits = RomanDigit.inReverseOrder()
                 .stream()
-                .filter(it -> hasOnly(classicNumberToConvert, it))
-                .findFirst()
-                .orElseThrow();
+                .filter(it -> classicNumberToConvert >= it.inClassicNumber())
+                .toList();
 
-        return convertWithOnly(classicNumberToConvert, eligibleRomainDigits);
+
+        StringBuilder romanNumber = new StringBuilder();
+        var remaining = classicNumberToConvert;
+        for (var it : eligibleRomanDigits) {
+            var intermediateResult = convertWithOnly(remaining, it);
+            romanNumber.append(intermediateResult.currentRomanNumber());
+            remaining = intermediateResult.remainingClassicNumber();
+
+            if (intermediateResult.isFinish()) {
+                return romanNumber.toString();
+            }
+        }
+
+        return romanNumber.toString();
     }
 
-    private String convertWithOnly(int classicNumber, RomanDigit romanDigit) {
-        return IntStream.range(0, classicNumber / romanDigit.inClassicNumber())
+    private IntermediateRomainNumber convertWithOnly(int classicNumber, RomanDigit romanDigit) {
+        var romanNumber = IntStream.range(0, classicNumber / romanDigit.inClassicNumber())
                 .mapToObj(it -> romanDigit.name()).reduce("", (a, b) -> a + b);
+        var remaining = classicNumber % romanDigit.inClassicNumber();
+        return new IntermediateRomainNumber(romanNumber, remaining);
     }
 
-    private boolean hasOnly(int classicNumber, RomanDigit romainDigitValue) {
-        return classicNumber % romainDigitValue.inClassicNumber() == 0;
+
+    record IntermediateRomainNumber(String currentRomanNumber, Integer remainingClassicNumber) {
+        boolean isFinish() {
+            return remainingClassicNumber == 0;
+        }
     }
 
 }
