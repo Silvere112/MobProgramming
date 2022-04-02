@@ -36,19 +36,13 @@ public class RomanNumberConverter {
                 .toList();
 
 
-        StringBuilder romanNumber = new StringBuilder();
-        var remaining = classicNumberToConvert;
+        var current = new IntermediateRomainNumber("", classicNumberToConvert);
         for (var it : eligibleRomanDigits) {
-            var intermediateResult = convertWithOnly(remaining, it);
-            romanNumber.append(intermediateResult.currentRomanNumber());
-            remaining = intermediateResult.remainingClassicNumber();
-
-            if (intermediateResult.isFinish()) {
-                return romanNumber.toString();
-            }
+            var additional = convertWithOnly(current.remainingClassicNumber, it);
+            current = new IntermediateRomainNumber(current.currentRomanNumber + additional.currentRomanNumber, additional.remainingClassicNumber);
         }
 
-        return romanNumber.toString();
+        return current.currentRomanNumber;
     }
 
     private IntermediateRomainNumber convertWithOnly(int classicNumber, RomanDigit romanDigit) {
@@ -60,9 +54,6 @@ public class RomanNumberConverter {
 
 
     record IntermediateRomainNumber(String currentRomanNumber, Integer remainingClassicNumber) {
-        boolean isFinish() {
-            return remainingClassicNumber == 0;
-        }
     }
 
 }
