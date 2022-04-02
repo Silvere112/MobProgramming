@@ -33,7 +33,11 @@ class MobProgrammingApplicationTests {
                 Arguments.of(8, "VIII"),
                 Arguments.of(11, "XI"),
                 Arguments.of(12, "XII"),
-                Arguments.of(13, "XIII")
+                Arguments.of(13, "XIII"),
+                Arguments.of(4, "IV"),
+                Arguments.of(9, "IX"),
+                Arguments.of(14, "XIV"),
+                Arguments.of(19, "XIX")
 
         );
     }

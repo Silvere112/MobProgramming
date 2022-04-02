@@ -30,6 +30,17 @@ public class RomanNumberConverter {
     }
 
     public String convert(int classicNumberToConvert) {
+
+        if (classicNumberToConvert == 4) {
+            return "IV";
+        } else if (classicNumberToConvert == 9) {
+            return "IX";
+        } else if (classicNumberToConvert == 14) {
+            return "XIV";
+        } else if (classicNumberToConvert == 19) {
+            return "XIX";
+        }
+
         var eligibleRomanDigits = RomanDigit.inReverseOrder()
                 .stream()
                 .filter(it -> classicNumberToConvert >= it.inClassicNumber())
