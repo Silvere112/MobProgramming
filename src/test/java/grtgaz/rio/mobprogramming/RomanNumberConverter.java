@@ -1,39 +1,50 @@
 package grtgaz.rio.mobprogramming;
 
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class RomanNumberConverter {
-    public String convert(int numberToConvert) {
-        if (hasOnly(numberToConvert, 10)) {
-            return convertWithOnlyX(numberToConvert);
-        } else if (hasOnly(numberToConvert, 5)) {
-            return convertWithOnlyV(numberToConvert);
-        } else if (hasOnly(numberToConvert, 1)) {
-            return convertWithOnlyI(numberToConvert);
+
+    enum RomanDigit {
+        V(5), I(1), X(10);
+
+        private final int classicNumber;
+
+        RomanDigit(int i) {
+            this.classicNumber = i;
         }
 
-        throw new RuntimeException("Unsupported number");
+        public int inClassicNumber() {
+            return classicNumber;
+        }
+
+        public static List<RomanDigit> inReverseOrder() {
+            return Arrays.stream(RomanDigit.values())
+                    .sorted(Comparator.comparingInt(RomanDigit::inClassicNumber).reversed())
+                    .collect(Collectors.toList());
+        }
     }
 
-    private boolean hasOnly(int number, int i) {
-        return number % i == 0;
+    public String convert(int classicNumberToConvert) {
+        var eligibleRomainDigits = RomanDigit.inReverseOrder()
+                .stream()
+                .filter(it -> hasOnly(classicNumberToConvert, it))
+                .findFirst()
+                .orElseThrow();
+
+        return convertWithOnly(classicNumberToConvert, eligibleRomainDigits);
     }
 
-    private String convertWithOnlyV(int number) {
-        return "V";
+    private String convertWithOnly(int classicNumber, RomanDigit romanDigit) {
+        return IntStream.range(0, classicNumber / romanDigit.inClassicNumber())
+                .mapToObj(it -> romanDigit.name()).reduce("", (a, b) -> a + b);
     }
 
-    private String convertWithOnlyX(int number) {
-        return IntStream.range(0, number / 10).mapToObj(it -> "X").reduce(
-                "",
-                (a, b) -> a + b
-        );
+    private boolean hasOnly(int classicNumber, RomanDigit romainDigitValue) {
+        return classicNumber % romainDigitValue.inClassicNumber() == 0;
     }
 
-    private String convertWithOnlyI(int number) {
-        return IntStream.range(0, number).mapToObj(it -> "I").reduce(
-                "",
-                (a, b) -> a + b
-        );
-    }
 }
